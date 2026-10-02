@@ -1,9 +1,5 @@
 # Blue whale call index and the 2019 NE Pacific marine heatwave
 
-Code and data for:
-
-> [Authors]. [Year]. [Title]. Endangered Species Research. [DOI]
-
 This repo reproduces the call index (CI), environmental anomalies, statistics, tables, and figures in the paper. MATLAB builds the daily CI from raw acoustic data, R does the data processing and statistics, and Python makes Figs 2–6. Fig 1 is made in R.
 
 ## Folders
