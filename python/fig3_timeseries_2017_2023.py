@@ -1,5 +1,5 @@
 # fig3_timeseries_2017_2023.py
-# Last updated: Sept 29, 2026
+# Last updated: Nov 13, 2026
 # Fig 3: monthly CI and raw BEUTI, chl a, SST, MLD for the study period, shaded by MHW period.
 
 import pandas as pd
@@ -16,8 +16,8 @@ spans = [("Before MHW", "2017-01-01", "2019-06-01", "#4A90E2", 0.25),
          ("During MHW", "2019-06-01", "2020-06-01", "#E24A4A", 0.30),
          ("After MHW", "2020-06-01", "2023-02-01", "#A8D5E2", 0.30)]
 
-panels = [("ci", "Call Index (CI)"),
-          ("beuti", "BEUTI"),
+panels = [("ci", "Call index"),
+          ("beuti", "BEUTI (mmol m$^{-1}$ s$^{-1}$)"),
           ("chla", "Chl $a$ (mg m$^{-3}$)"),
           ("sst", "SST (°C)"),
           ("mld", "MLD (m)")]
@@ -32,6 +32,8 @@ for ax, (v, lab), letter in zip(axes, panels, "abcde"):
     ax.text(0.01, 0.85, letter, transform=ax.transAxes, fontweight="bold")
     ax.grid(alpha=0.3)
     ax.set_xlim(start, end + pd.Timedelta(days=15))
+    if v == "mld":
+        ax.set_ylim(top=72)
 
 for name, a, b, col, al in spans:
     mid = pd.Timestamp(a) + (min(pd.Timestamp(b), end) - pd.Timestamp(a)) / 2

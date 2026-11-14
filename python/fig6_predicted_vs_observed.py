@@ -1,5 +1,5 @@
 # fig6_predicted_vs_observed.py
-# Last updated: Sept 29, 2026
+# Last updated: Nov 13, 2026
 # Fig 6: predicted vs observed CI anomaly for Models 1-3 (n = 69).
 
 import pandas as pd
@@ -21,15 +21,14 @@ for ax, m in zip(axes, ["m1", "m2", "m3"]):
     for p in periods:
         d = pred[pred.mhw_period == p]
         ax.scatter(d["pred_" + m], d.ci_anom, color=cols[p], edgecolor="black", lw=0.5, s=70, alpha=0.8, label=p)
-    ax.plot(lim, lim, color="red", lw=2)
     ax.set_xlim(lim)
     ax.set_ylim(lim)
     ax.set_aspect("equal")
     ax.set_title(f"{titles[m]}\n(Adj. $R^2$ = {r2[m]:.3f})", fontweight="bold")
-    ax.set_xlabel("Predicted CI anomaly")
+    ax.set_xlabel("Predicted call index anomaly")
     ax.grid(ls="--", alpha=0.3)
 
-axes[0].set_ylabel("Observed CI anomaly")
+axes[0].set_ylabel("Observed call index anomaly")
 h, l = axes[0].get_legend_handles_labels()
 fig.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, 0.02), ncol=3, frameon=True)
 plt.tight_layout()

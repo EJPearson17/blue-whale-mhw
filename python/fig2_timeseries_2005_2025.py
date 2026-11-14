@@ -1,5 +1,5 @@
 # fig2_timeseries_2005_2025.py
-# Last updated: Sept 29, 2026
+# Last updated: Nov 13, 2026
 # Fig 2: monthly CI (2017-2023) and raw BEUTI, chl a, SST, MLD (2005-2025), shaded by MHW period.
 
 import pandas as pd
@@ -18,8 +18,8 @@ spans = [("Before MHW", "2017-01-01", "2019-06-01", "#4A90E2", 0.25),
          ("During MHW", "2019-06-01", "2020-06-01", "#E24A4A", 0.30),
          ("After MHW", "2020-06-01", end, "#A8D5E2", 0.30)]
 
-panels = [(dat, "ci", "Call Index (CI)"),
-          (env, "beuti", "BEUTI"),
+panels = [(dat, "ci", "Call index"),
+          (env, "beuti", "BEUTI (mmol m$^{-1}$ s$^{-1}$)"),
           (env, "chla", "Chl $a$ (mg m$^{-3}$)"),
           (env, "sst", "SST (°C)"),
           (env, "mld", "MLD (m)")]
@@ -35,10 +35,30 @@ for ax, (d, v, lab), letter in zip(axes, panels, "abcde"):
     ax.grid(alpha=0.3)
     ax.set_xlim(start, end)
 
-for name, a, b, col, al in spans:
-    mid = pd.Timestamp(a) + (pd.Timestamp(b) - pd.Timestamp(a)) / 2
-    y = 1.28 if name == "During MHW" else 1.08
-    axes[0].text(mid, y, name, transform=axes[0].get_xaxis_transform(), ha="center")
+# period labels on one line, with leader lines to each band
+trans = axes[0].get_xaxis_transform()
+mids = {name: mdates.date2num(pd.Timestamp(a) + (pd.Timestamp(b) - pd.Timestamp(a)) / 2)
+        for name, a, b, col, al in spans}
+fig.canvas.draw()
+inv = axes[0].transData.inverted()
+
+def text_width(s):
+    t = axes[0].text(0, 0, s)
+    bb = t.get_window_extent(fig.canvas.get_renderer())
+    t.remove()
+    return inv.transform((bb.x1, 0))[0] - inv.transform((bb.x0, 0))[0]
+
+w = {name: text_width(name) for name in mids}
+gap = 120
+dm = mids["During MHW"]
+pos = {"Before MHW": min(mids["Before MHW"], dm - w["During MHW"] / 2 - gap - w["Before MHW"] / 2),
+       "During MHW": dm,
+       "After MHW": max(mids["After MHW"], dm + w["During MHW"] / 2 + gap + w["After MHW"] / 2)}
+
+for name in mids:
+    axes[0].annotate(name, xy=(mids[name], 1.0), xycoords=trans,
+                     xytext=(pos[name], 1.14), textcoords=trans, ha="center", va="bottom",
+                     arrowprops=dict(arrowstyle="-", color="0.4", lw=1, shrinkA=2, shrinkB=0))
 
 axes[-1].xaxis.set_major_locator(mdates.YearLocator(2))
 axes[-1].xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
